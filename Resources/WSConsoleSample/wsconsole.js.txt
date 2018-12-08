@@ -87,7 +87,7 @@ class WebSocketLogger {
     }
 
     async onmessage(e) {
-        console.log(e.data);
+        //console.log(e.data);
         try {
             const parsed = JSON.parse(e.data);
             this.addLog(parsed);
