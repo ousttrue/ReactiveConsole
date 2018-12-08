@@ -1,0 +1,151 @@
+function get_ws_url() {
+    // from same host & port
+    let schema;
+    if (window.location.protocol === "https:") {
+        schema = "wss:";
+    } else {
+        schema = "ws:";
+    }
+    return schema + window.location.host + window.location.pathname;
+}
+
+function readBlobAsync(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(reader.result);
+        reader.onerror = e => reject(`Error reading ${blob}`);
+        reader.readAsArrayBuffer(blob);
+    });
+};
+
+function createElement(tag, text, className) {
+    const e = document.createElement(tag);
+    e.innerText = text;
+    if (className) {
+        e.className = className;
+    }
+    return e;
+}
+
+function getLogLevel(level) {
+    switch (level) {
+        case 3: return 'debug';
+        case 2: return 'info';
+        case 1: return 'warning';
+        case 0: return 'error';
+    }
+}
+
+function UnixtimeToDate(ut) {
+    var tD = new Date(ut * 1000);
+    tD.setTime(tD.getTime());
+    return tD;
+}
+
+function DateFormat(date) {
+    return `${ZeroPadding(date.getMonth() + 1, 2)}/${ZeroPadding(date.getDate(), 2)} ${ZeroPadding(date.getHours(), 2)}:${ZeroPadding(date.getMinutes(), 2)}`
+}
+
+function ZeroPadding(NUM, LEN) {
+    return (Array(LEN).join('0') + NUM).slice(-LEN);
+}
+
+function CreateCaller(file, line) {
+    return `${file.split("\\").slice(-1)}:${line}`;
+}
+
+class WebSocketLogger {
+    constructor(logger, connection) {
+        this.logger = logger;
+        this.connection = connection;
+        this.ws = null;
+    }
+
+    start() {
+
+        this.ws = new WebSocket(get_ws_url());
+
+        this.ws.onopen = (e) => {
+            this.connection.className = "opened";
+        };
+
+        this.ws.onmessage = (e) => this.onmessage(e);
+
+        this.ws.onclose = () => {
+            //reconnect now
+            this.connection.className = "closed";
+            this.check();
+        };
+
+        setInterval(() => this.check(), 5000);
+    }
+
+    check() {
+        if (!this.ws || this.ws.readyState == 3) {
+            this.start();
+        }
+    }
+
+    async onmessage(e) {
+        console.log(e.data);
+        try {
+            const parsed = JSON.parse(e.data);
+            this.addLog(parsed);
+        }
+        catch (error) {
+            console.log(e);
+            this.addLog('fail json', error, e.data);
+        }
+    }
+
+    addLog(message) {
+        const logLevel = getLogLevel(message.LogLevel);
+        const li = createElement('li', null);
+
+        const level = createElement('span', `${logLevel}`, logLevel);
+        li.appendChild(level);
+
+        const date = UnixtimeToDate(message.UnixTime);
+        const dateText = DateFormat(date);
+        const time = createElement('span', dateText, 'date');
+        li.appendChild(time);
+
+        const callerMsg = CreateCaller(message.CallerFile, message.CallerLine);
+        const caller = createElement('span', callerMsg, 'caller');
+        li.appendChild(caller);
+
+        const msg = createElement('span', message.Message, 'message');
+        li.appendChild(msg);
+
+        this.logger.appendChild(li);
+        this.logger.scrollTop = li.offsetTop - 50;
+    }
+
+    clearLog() {
+        while (this.logger.firstChild) {
+            this.logger.removeChild(this.logger.firstChild);
+        }
+    }
+
+    send(msg) {
+        this.ws.send(msg);
+    }
+}
+
+const ws = new WebSocketLogger(
+    document.getElementById("logger"),
+    document.getElementById("connection"),
+);
+ws.start();
+
+//
+// message test
+//
+
+let times = 1;
+
+window.addEventListener('DOMContentLoaded', function (e) {
+    document.getElementById('clear').addEventListener('click', function (e) {
+        ws.clearLog();
+    });
+});
