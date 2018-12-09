@@ -8,9 +8,9 @@ namespace ReactiveConsole
         [Test]
         public void WebSocketTest()
         {
-            var accepted = HttpSession.AcceptWebSocketKey(Utf8String.From("dGhlIHNhbXBsZSBub25jZQ=="));
+            var accepted = HttpSession.AcceptWebSocketKey(Utf8Bytes.From("dGhlIHNhbXBsZSBub25jZQ=="));
 
-            Assert.AreEqual(Utf8String.From("s3pPLMBiTxaQ9kYGzzhZRbK+xOo="), accepted);
+            Assert.AreEqual(Utf8Bytes.From("s3pPLMBiTxaQ9kYGzzhZRbK+xOo="), accepted);
         }
     }
 }

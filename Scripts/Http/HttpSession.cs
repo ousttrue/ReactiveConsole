@@ -78,14 +78,14 @@ namespace ReactiveConsole
             });
         }
 
-        public static Utf8String AcceptWebSocketKey(Utf8String key)
+        public static Utf8Bytes AcceptWebSocketKey(Utf8Bytes key)
         {
-            var concat = key + Utf8String.From("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+            var concat = key + Utf8Bytes.From("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
 
             using (var sha1 = SHA1.Create())
             {
                 var bs = sha1.ComputeHash(concat.Bytes.Array, concat.Bytes.Offset, concat.Bytes.Count);
-                return Utf8String.From(Convert.ToBase64String(bs));
+                return Utf8Bytes.From(Convert.ToBase64String(bs));
             }
         }
 
@@ -98,7 +98,7 @@ namespace ReactiveConsole
                 Http10StatusLine.InternalError.WriteTo(s); s.CRLF();
                 s.CRLF();
 
-                Utf8String.From(ex.ToString()).WriteTo(s);
+                Utf8Bytes.From(ex.ToString()).WriteTo(s);
             }
             Dispose();
         }
@@ -192,7 +192,7 @@ namespace ReactiveConsole
             Request(request);
         }
 
-        IEnumerable<Utf8String> EnumLines(ArraySegment<Byte> bytes)
+        IEnumerable<Utf8Bytes> EnumLines(ArraySegment<Byte> bytes)
         {
             var start = bytes.Offset;
             var offset = start;
@@ -201,16 +201,16 @@ namespace ReactiveConsole
                 var value = BitConverter.ToInt16(bytes.Array, offset);
                 if (value == CRLF)
                 {
-                    yield return new Utf8String(bytes.Array, start, offset - start);
+                    yield return new Utf8Bytes(bytes.Array, start, offset - start);
                     start = offset + 2;
                     i += 2;
                 }
             }
         }
 
-        static Utf8String s_upgrade_websocket = Utf8String.From("Upgrade: websocket");
-        static Utf8String s_connection_upgrade = Utf8String.From("Connection: Upgrade");
-        static Utf8String s_websocket_accept = Utf8String.From("Sec-WebSocket-Accept: ");
+        static Utf8Bytes s_upgrade_websocket = Utf8Bytes.From("Upgrade: websocket");
+        static Utf8Bytes s_connection_upgrade = Utf8Bytes.From("Connection: Upgrade");
+        static Utf8Bytes s_websocket_accept = Utf8Bytes.From("Sec-WebSocket-Accept: ");
 
         void Request(HttpRequest request)
         {

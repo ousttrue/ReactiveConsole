@@ -97,9 +97,17 @@ namespace ReactiveConsole
         }
 
         public event Action Closed;
+
+        bool m_disposed;
         public void Dispose()
         {
-            Logger.Warning("[WebSocketSession] Dispose");
+            if (m_disposed)
+            {
+                return;
+            }
+            m_disposed = true;
+
+            Logger.DebugFormat("[WebSocketSession:{0}] Dispose", m_sessinID);
             m_sender.Dispose();
             var handler = Closed;
             if (handler != null)
@@ -112,8 +120,12 @@ namespace ReactiveConsole
 
         int m_frameSize;
 
+        static int s_sessionID=1;
+        int m_sessinID;
         public WebSocketSession(Socket w, IObservable<WebSocketFrame> frameObservable, int frameSize)
         {
+            m_sessinID = s_sessionID++;
+
             m_frameSize = frameSize;
             Observable = frameObservable;
             m_sender = new ThreadingSender(w, m_pool);

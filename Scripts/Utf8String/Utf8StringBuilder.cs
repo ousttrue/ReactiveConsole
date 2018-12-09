@@ -20,14 +20,14 @@ namespace ReactiveConsole
             Ascii('"');
         }
 
-        public void Add(Utf8String str)
+        public void Add(Utf8Bytes str)
         {
             m_buffer.Push(str.Bytes);
         }
 
-        public Utf8String ToUtf8String()
+        public Utf8Bytes ToUtf8String()
         {
-            return new Utf8String(m_buffer.Bytes);
+            return new Utf8Bytes(m_buffer.Bytes);
         }
     }
 }

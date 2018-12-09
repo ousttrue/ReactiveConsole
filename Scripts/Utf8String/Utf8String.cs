@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ReactiveConsole
 {
-    public struct Utf8String : IComparable<Utf8String>
+    public struct Utf8Bytes : IComparable<Utf8Bytes>
     {
         public static readonly System.Text.Encoding Encoding = new System.Text.UTF8Encoding(false);
 
@@ -19,7 +19,7 @@ namespace ReactiveConsole
             return new Utf8Iterator(Bytes);
         }
 
-        public int CompareTo(Utf8String other)
+        public int CompareTo(Utf8Bytes other)
         {
             int i = 0;
             for(;  i<ByteLength && i<other.ByteLength; ++i)
@@ -52,25 +52,25 @@ namespace ReactiveConsole
             get { return Bytes.Array[Bytes.Offset + i]; }
         }
 
-        public Utf8String(ArraySegment<Byte> bytes)
+        public Utf8Bytes(ArraySegment<Byte> bytes)
         {
             Bytes = bytes;
         }
 
-        public Utf8String(Byte[] bytes, int offset, int count) : this(new ArraySegment<Byte>(bytes, offset, count))
+        public Utf8Bytes(Byte[] bytes, int offset, int count) : this(new ArraySegment<Byte>(bytes, offset, count))
         {
         }
 
-        public Utf8String(Byte[] bytes) : this(bytes, 0, bytes.Length)
+        public Utf8Bytes(Byte[] bytes) : this(bytes, 0, bytes.Length)
         {
         }
 
-        public static Utf8String From(string src)
+        public static Utf8Bytes From(string src)
         {
-            return new Utf8String(Encoding.GetBytes(src));
+            return new Utf8Bytes(Encoding.GetBytes(src));
         }
 
-        public static Utf8String From(string src, Byte[] bytes)
+        public static Utf8Bytes From(string src, Byte[] bytes)
         {
             var required = src.Sum(c => Utf8Iterator.ByteLengthFromChar(c));
             if (required > bytes.Length)
@@ -99,30 +99,30 @@ namespace ReactiveConsole
                     bytes[pos++] = (byte)(Utf8Iterator.Head1 | Utf8Iterator.Mask6 & (c));
                 }
             }
-            return new Utf8String(new ArraySegment<byte>(bytes, 0, pos));
+            return new Utf8Bytes(new ArraySegment<byte>(bytes, 0, pos));
         }
 
         // -2147483648 ~ 2147483647
-        public static Utf8String From(int src)
+        public static Utf8Bytes From(int src)
         {
             if (src >= 0)
             {
                 if (src < 10)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src),
                     });
                 }
                 else if (src < 100)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/10),
                         (byte)(0x30 + src%10),
                     });
                 }
                 else if (src < 1000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/100),
                         (byte)(0x30 + src/10),
                         (byte)(0x30 + src%10),
@@ -130,7 +130,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 10000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/1000),
                         (byte)(0x30 + src/100),
                         (byte)(0x30 + src/10),
@@ -139,7 +139,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 100000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/10000),
                         (byte)(0x30 + src/1000),
                         (byte)(0x30 + src/100),
@@ -149,7 +149,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 1000000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/100000),
                         (byte)(0x30 + src/10000),
                         (byte)(0x30 + src/1000),
@@ -160,7 +160,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 10000000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/1000000),
                         (byte)(0x30 + src/100000),
                         (byte)(0x30 + src/10000),
@@ -172,7 +172,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 100000000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/10000000),
                         (byte)(0x30 + src/1000000),
                         (byte)(0x30 + src/100000),
@@ -185,7 +185,7 @@ namespace ReactiveConsole
                 }
                 else if (src < 1000000000)
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/100000000),
                         (byte)(0x30 + src/10000000),
                         (byte)(0x30 + src/1000000),
@@ -199,7 +199,7 @@ namespace ReactiveConsole
                 }
                 else
                 {
-                    return new Utf8String(new byte[] {
+                    return new Utf8Bytes(new byte[] {
                         (byte)(0x30 + src/1000000000),
                         (byte)(0x30 + src/100000000),
                         (byte)(0x30 + src/10000000),
@@ -219,12 +219,12 @@ namespace ReactiveConsole
             }
         }
 
-        public Utf8String Concat(Utf8String rhs)
+        public Utf8Bytes Concat(Utf8Bytes rhs)
         {
             var bytes = new Byte[ByteLength + rhs.ByteLength];
             Buffer.BlockCopy(Bytes.Array, Bytes.Offset, bytes, 0, ByteLength);
             Buffer.BlockCopy(rhs.Bytes.Array, rhs.Bytes.Offset, bytes, ByteLength, rhs.ByteLength);
-            return new Utf8String(bytes);
+            return new Utf8Bytes(bytes);
         }
 
         public override string ToString()
@@ -247,7 +247,7 @@ namespace ReactiveConsole
             }
         }
 
-        public bool StartsWith(Utf8String rhs)
+        public bool StartsWith(Utf8Bytes rhs)
         {
             if (rhs.ByteLength > ByteLength)
             {
@@ -265,7 +265,7 @@ namespace ReactiveConsole
             return true;
         }
 
-        public bool EndsWith(Utf8String rhs)
+        public bool EndsWith(Utf8Bytes rhs)
         {
             if (rhs.ByteLength > ByteLength)
             {
@@ -301,14 +301,14 @@ namespace ReactiveConsole
             return -1;
         }
 
-        public Utf8String Subbytes(int offset)
+        public Utf8Bytes Subbytes(int offset)
         {
             return Subbytes(offset, ByteLength - offset);
         }
 
-        public Utf8String Subbytes(int offset, int count)
+        public Utf8Bytes Subbytes(int offset, int count)
         {
-            return new Utf8String(Bytes.Array, Bytes.Offset + offset, count);
+            return new Utf8Bytes(Bytes.Array, Bytes.Offset + offset, count);
         }
 
         static bool IsSpace(Byte b)
@@ -327,7 +327,7 @@ namespace ReactiveConsole
             return false;
         }
 
-        public Utf8String TrimStart()
+        public Utf8Bytes TrimStart()
         {
             var i = 0;
             for (; i < ByteLength; ++i)
@@ -342,20 +342,20 @@ namespace ReactiveConsole
 
         public override bool Equals(Object obj)
         {
-            return obj is Utf8String && Equals((Utf8String)obj);
+            return obj is Utf8Bytes && Equals((Utf8Bytes)obj);
         }
 
-        public static bool operator ==(Utf8String x, Utf8String y)
+        public static bool operator ==(Utf8Bytes x, Utf8Bytes y)
         {
             return x.Equals(y);
         }
 
-        public static bool operator !=(Utf8String x, Utf8String y)
+        public static bool operator !=(Utf8Bytes x, Utf8Bytes y)
         {
             return !(x == y);
         }
 
-        public bool Equals(Utf8String other)
+        public bool Equals(Utf8Bytes other)
         {
             if (ByteLength != other.ByteLength)
             {
@@ -378,9 +378,9 @@ namespace ReactiveConsole
             return ByteLength.GetHashCode();
         }
 
-        public static Utf8String operator +(Utf8String l, Utf8String r)
+        public static Utf8Bytes operator +(Utf8Bytes l, Utf8Bytes r)
         {
-            return new Utf8String(l.Bytes.Concat(r.Bytes));
+            return new Utf8Bytes(l.Bytes.Concat(r.Bytes));
         }
 
         public bool IsInt

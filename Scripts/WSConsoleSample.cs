@@ -2,12 +2,15 @@
 using System.Collections;
 using UniRx.Diagnostics;
 using UnityEngine;
+using UniRx;
 
 
 namespace ReactiveConsole
 {
     public class WSConsoleSample : MonoBehaviour
     {
+        static readonly UniRx.Diagnostics.Logger Logger = new UniRx.Diagnostics.Logger("WSConsoleSample");
+
         [SerializeField]
         int m_port = 80;
 
@@ -42,7 +45,7 @@ namespace ReactiveConsole
             // こっちは元ファイル変えてF5でリロードできる
             // host directory for reload
             dispatcher.Solvers.Add(new FolderMounter("/",
-                UnityPath.FromAsset(m_html).Parent.FullPath,
+                UnityPathUtil.GetFullPath(m_html),
                 FolderMounter.JsTxtFilter));
 #else
             dispatcher.Solvers.Add(new FileMounter("/index.html", m_html.bytes));
@@ -62,16 +65,37 @@ namespace ReactiveConsole
         {
             Logging.Info("listen " + m_port);
             var m_http = new HttpDispatcher(SetupHttpMount());
-            var f = new SimpleJsonFormatter();
-            m_console = new WSConsole(m_port, m_http, f);
+
+            m_console = new WSConsole(m_port, m_http);
+
+            var utf8 = new System.Text.UTF8Encoding(false);
+            m_disposable = Logging.Observable.Subscribe(x =>
+            {
+                try
+                {
+                    // LogEntry to Json
+                    var json = UnityEngine.JsonUtility.ToJson(x);
+                    m_console.SendFrame(WebSocketFrameOpCode.Text, new ArraySegment<byte>(utf8.GetBytes(json)));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
         }
 
+        IDisposable m_disposable;
         private void OnDisable()
         {
             if (m_console != null)
             {
                 m_console.Dispose();
                 m_console = null;
+            }
+            if (m_disposable != null)
+            {
+                m_disposable.Dispose();
+                m_disposable = null;
             }
         }
 

@@ -7,19 +7,19 @@ namespace ReactiveConsole
 {
     public static class Utf8StringExtensions
     {
-        public static void WriteTo(this Utf8String src, Stream dst)
+        public static void WriteTo(this Utf8Bytes src, Stream dst)
         {
             dst.Write(src.Bytes.Array, src.Bytes.Offset, src.Bytes.Count);
         }
 
-        public static Utf8Iterator GetFirst(this Utf8String src)
+        public static Utf8Iterator GetFirst(this Utf8Bytes src)
         {
             var it = src.GetIterator();
             it.MoveNext();
             return it;
         }
 
-        public static bool TrySearchByte(this Utf8String src, Func<byte, bool> pred, out int pos)
+        public static bool TrySearchByte(this Utf8Bytes src, Func<byte, bool> pred, out int pos)
         {
             pos = 0;
             for (; pos < src.ByteLength; ++pos)
@@ -32,7 +32,7 @@ namespace ReactiveConsole
             return false;
         }
 
-        public static bool TrySearchAscii(this Utf8String src, Byte target, int start, out int pos)
+        public static bool TrySearchAscii(this Utf8Bytes src, Byte target, int start, out int pos)
         {
             var p = new Utf8Iterator(src.Bytes, start);
             while (p.MoveNext())
@@ -84,7 +84,7 @@ namespace ReactiveConsole
             return false;
         }
 
-        public static IEnumerable<Utf8String> Split(this Utf8String src, byte delemeter)
+        public static IEnumerable<Utf8Bytes> Split(this Utf8Bytes src, byte delemeter)
         {
             var start = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -94,7 +94,7 @@ namespace ReactiveConsole
                 {
                     if (p.BytePosition - start == 0)
                     {
-                        yield return default(Utf8String);
+                        yield return default(Utf8Bytes);
                     }
                     else
                     {
@@ -111,7 +111,7 @@ namespace ReactiveConsole
         }
 
         #region atoi
-        public static SByte ToSByte(this Utf8String src)
+        public static SByte ToSByte(this Utf8Bytes src)
         {
             SByte value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -135,7 +135,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static Int16 ToInt16(this Utf8String src)
+        public static Int16 ToInt16(this Utf8Bytes src)
         {
             Int16 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -159,7 +159,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static Int32 ToInt32(this Utf8String src)
+        public static Int32 ToInt32(this Utf8Bytes src)
         {
             Int32 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -183,7 +183,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static Int64 ToInt64(this Utf8String src)
+        public static Int64 ToInt64(this Utf8Bytes src)
         {
             Int64 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -207,7 +207,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static Byte ToByte(this Utf8String src)
+        public static Byte ToByte(this Utf8Bytes src)
         {
             Byte value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -231,7 +231,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static UInt16 ToUInt16(this Utf8String src)
+        public static UInt16 ToUInt16(this Utf8Bytes src)
         {
             UInt16 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -255,7 +255,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static UInt32 ToUInt32(this Utf8String src)
+        public static UInt32 ToUInt32(this Utf8Bytes src)
         {
             UInt32 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -279,7 +279,7 @@ namespace ReactiveConsole
             }
             return value;
         }
-        public static UInt64 ToUInt64(this Utf8String src)
+        public static UInt64 ToUInt64(this Utf8Bytes src)
         {
             UInt64 value = 0;
             var p = new Utf8Iterator(src.Bytes);
@@ -305,11 +305,11 @@ namespace ReactiveConsole
         }
         #endregion
 
-        public static float ToSingle(this Utf8String src)
+        public static float ToSingle(this Utf8Bytes src)
         {
             return Single.Parse(src.ToAscii(), System.Globalization.CultureInfo.InvariantCulture);
         }
-        public static double ToDouble(this Utf8String src)
+        public static double ToDouble(this Utf8Bytes src)
         {
             return Double.Parse(src.ToAscii(), System.Globalization.CultureInfo.InvariantCulture);
         }

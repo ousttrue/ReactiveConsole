@@ -151,7 +151,7 @@ namespace ReactiveConsole
         {
             if (OpCode == WebSocketFrameOpCode.Text)
             {
-                return String.Format("FIN={0} Op={1} Payload={2}", IsFin, OpCode, new Utf8String(Payload));
+                return String.Format("FIN={0} Op={1} Payload={2}", IsFin, OpCode, new Utf8Bytes(Payload));
             }
             else
             {

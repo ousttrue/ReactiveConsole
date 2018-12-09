@@ -70,7 +70,7 @@ namespace ReactiveConsole
             }
         }
 
-        public WSConsole(int port, HttpDispatcher http, ILogFormatter formatter)
+        public WSConsole(int port, HttpDispatcher http)
         {
             // websocket handling
             http.WebSocketOpened
@@ -91,21 +91,8 @@ namespace ReactiveConsole
             ex =>
             {
                 Logging.Exception(ex);
-            });
-
-            // logger to ws
-            var op = formatter.IsBinary ? WebSocketFrameOpCode.Binary : WebSocketFrameOpCode.Text;
-            Logging.Observable.Subscribe(x =>
-            {
-                try
-                {
-                    SendFrame(op, formatter.Format(x));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            });
+            })
+            ;
         }
     }
 }

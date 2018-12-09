@@ -14,7 +14,7 @@ namespace ReactiveConsole
 
     public class OkSolver : IHttpRequestSolver
     {
-        Utf8String m_body = Utf8String.From("Hello");
+        Utf8Bytes m_body = Utf8Bytes.From("Hello");
 
         public bool Match(HttpRequest _)
         {
@@ -35,15 +35,15 @@ namespace ReactiveConsole
 
     public class FolderMounter : IHttpRequestSolver
     {
-        Utf8String m_mountPoint;
+        Utf8Bytes m_mountPoint;
         string m_path;
-        public delegate Utf8String PathFilter(Utf8String src);
+        public delegate Utf8Bytes PathFilter(Utf8Bytes src);
         PathFilter m_filter;
 
-        static readonly Utf8String s_js = Utf8String.From(".js");
-        static readonly Utf8String s_css = Utf8String.From(".css");
-        static readonly Utf8String s_txt = Utf8String.From(".txt");
-        public static Utf8String JsTxtFilter(Utf8String src)
+        static readonly Utf8Bytes s_js = Utf8Bytes.From(".js");
+        static readonly Utf8Bytes s_css = Utf8Bytes.From(".css");
+        static readonly Utf8Bytes s_txt = Utf8Bytes.From(".txt");
+        public static Utf8Bytes JsTxtFilter(Utf8Bytes src)
         {
             if (src.EndsWith(s_js) || src.EndsWith(s_css))
             {
@@ -54,7 +54,7 @@ namespace ReactiveConsole
 
         public FolderMounter(string mountPoint, string path, PathFilter pathFilter)
         {
-            m_mountPoint = Utf8String.From(mountPoint);
+            m_mountPoint = Utf8Bytes.From(mountPoint);
             m_path = path;
             m_filter = pathFilter;
         }
@@ -97,13 +97,13 @@ namespace ReactiveConsole
 
     public class FileMounter : IHttpRequestSolver
     {
-        Utf8String m_mountPoint;
-        Utf8String m_content;
+        Utf8Bytes m_mountPoint;
+        Utf8Bytes m_content;
 
         public FileMounter(String mountPoint, Byte[] content)
         {
-            m_mountPoint = Utf8String.From(mountPoint);
-            m_content = new Utf8String(content);
+            m_mountPoint = Utf8Bytes.From(mountPoint);
+            m_content = new Utf8Bytes(content);
         }
 
         public bool Match(HttpRequest request)
