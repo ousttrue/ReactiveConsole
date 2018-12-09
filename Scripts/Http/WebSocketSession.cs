@@ -107,7 +107,7 @@ namespace ReactiveConsole
             }
             m_disposed = true;
 
-            Logger.DebugFormat("[WebSocketSession:{0}] Dispose", m_sessinID);
+            Logger.LogFormat("[WebSocketSession:{0}] Dispose", m_sessinID);
             m_sender.Dispose();
             var handler = Closed;
             if (handler != null)

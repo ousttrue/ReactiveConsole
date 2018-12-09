@@ -17,7 +17,8 @@ namespace ReactiveConsole
             {
                 throw new ArgumentException();
             }
-            return Path.Combine(Application.dataPath, unityPath).Replace("\\", "/");
+            var dir = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            return Path.Combine(dir, unityPath).Replace("\\", "/");
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using UniRx.Diagnostics;
 using UnityEngine;
 using UniRx;
-
+using System.IO;
 
 namespace ReactiveConsole
 {
@@ -44,8 +44,9 @@ namespace ReactiveConsole
 #if UNITY_EDITOR
             // こっちは元ファイル変えてF5でリロードできる
             // host directory for reload
+            var path = Path.GetDirectoryName(UnityPathUtil.GetFullPath(m_html));
             dispatcher.Solvers.Add(new FolderMounter("/",
-                UnityPathUtil.GetFullPath(m_html),
+                path,
                 FolderMounter.JsTxtFilter));
 #else
             dispatcher.Solvers.Add(new FileMounter("/index.html", m_html.bytes));
