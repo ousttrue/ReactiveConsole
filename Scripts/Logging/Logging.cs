@@ -112,15 +112,5 @@ namespace ReactiveConsole
         {
             s_subject.OnNext(new LogEntry(LogLevel.Debug, message, file, line, member));
         }
-
-        public static void LogFormat(string fmt, params object[] args)
-        {
-            Debug(String.Format(fmt, args));
-        }
-
-        public static void ErrorFormat(string fmt, params object[] args)
-        {
-            Error(String.Format(fmt, args));
-        }
     }
 }
