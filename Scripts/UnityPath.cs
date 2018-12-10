@@ -10,6 +10,7 @@ namespace ReactiveConsole
 {
     public static class UnityPathUtil
     {
+#if UNITY_EDITOR
         public static string GetFullPath(UnityEngine.Object asset)
         {
             var unityPath = AssetDatabase.GetAssetPath(asset);
@@ -20,5 +21,6 @@ namespace ReactiveConsole
             var dir = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
             return Path.Combine(dir, unityPath).Replace("\\", "/");
         }
+#endif
     }
 }
