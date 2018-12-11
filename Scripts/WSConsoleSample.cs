@@ -4,6 +4,7 @@ using UniRx.Diagnostics;
 using UnityEngine;
 using UniRx;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ReactiveConsole
 {
@@ -14,17 +15,55 @@ namespace ReactiveConsole
         [SerializeField]
         int m_port = 80;
 
+        [Serializable]
+        struct AssetMount
+        {
+            public string MountPoint;
+            public TextAsset Asset;
+
+            public AssetMount(string mountPoint, string resourceName)
+            {
+                MountPoint = mountPoint;
+                Asset = Resources.Load<TextAsset>(resourceName);
+            }
+
+
+#if UNITY_EDITOR
+            public Func<Byte[]> Loader
+            {
+                get
+                {
+                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(Asset);
+                    var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
+                    return () => File.ReadAllBytes(assetPath);
+                }
+            }
+#else
+            public Func<Byte[]> Loader
+            {
+                get
+                {
+                    var asset = Asset;
+                    return () => asset.bytes;
+                }
+            }
+#endif
+        }
+
         [SerializeField]
-        TextAsset m_html;
-        [SerializeField]
-        TextAsset m_js;
-        [SerializeField]
-        TextAsset m_css;
+        List<AssetMount> m_mounts = new List<AssetMount>();
 
         [SerializeField]
         float m_interval = 5.0f;
 
         WSConsole m_console;
+
+        private void Reset()
+        {
+            m_mounts.Add(new AssetMount("/index.html", "WSConsoleSample/index"));
+            m_mounts.Add(new AssetMount("/wsconsole.css", "WSConsoleSample/wsconsole.css"));
+            m_mounts.Add(new AssetMount("/wsconsole.js", "WSConsoleSample/wsconsole.js"));
+        }
 
         private void Awake()
         {
@@ -41,18 +80,10 @@ namespace ReactiveConsole
         {
             var dispatcher = new DispatchSolver();
 
-#if UNITY_EDITOR
-            // こっちは元ファイル変えてF5でリロードできる
-            // host directory for reload
-            var path = Path.GetDirectoryName(UnityPathUtil.GetFullPath(m_html));
-            dispatcher.Solvers.Add(new FolderMounter("/",
-                path,
-                FolderMounter.JsTxtFilter));
-#else
-            dispatcher.Solvers.Add(new FileMounter("/index.html", m_html.bytes));
-            dispatcher.Solvers.Add(new FileMounter("/wsconsole.js", m_js.bytes));
-            dispatcher.Solvers.Add(new FileMounter("/wsconsole.css", m_css.bytes));
-#endif
+            foreach(var m in m_mounts)
+            {
+                dispatcher.Solvers.Add(new FileMounter(m.MountPoint, m.Loader));
+            }
 
             return dispatcher;
         }

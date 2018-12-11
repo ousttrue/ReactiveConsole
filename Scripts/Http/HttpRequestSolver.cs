@@ -98,12 +98,12 @@ namespace ReactiveConsole
     public class FileMounter : IHttpRequestSolver
     {
         Utf8Bytes m_mountPoint;
-        Utf8Bytes m_content;
+        Func<Byte[]> m_content;
 
-        public FileMounter(String mountPoint, Byte[] content)
+        public FileMounter(String mountPoint, Func<Byte[]> content)
         {
             m_mountPoint = Utf8Bytes.From(mountPoint);
-            m_content = new Utf8Bytes(content);
+            m_content = content;
         }
 
         public bool Match(HttpRequest request)
@@ -118,7 +118,9 @@ namespace ReactiveConsole
             Logging.Info(string.Format("[{0}] 200 <= {1}", session.ID, request));
             Http10StatusLine.Ok.WriteTo(s); s.CRLF();
             s.CRLF();
-            m_content.WriteTo(s);
+
+            var bytes = m_content();
+            new Utf8Bytes(bytes).WriteTo(s);
         }
     }
 
