@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using UnityEngine;
 
 namespace ReactiveConsole
 {
@@ -95,10 +95,47 @@ namespace ReactiveConsole
         }
     }
 
+    [Serializable]
+    public struct AssetMount
+    {
+        public string MountPoint;
+        public TextAsset Asset;
+
+        public AssetMount(string mountPoint, string resourceName)
+        {
+            MountPoint = mountPoint;
+            Asset = Resources.Load<TextAsset>(resourceName);
+        }
+
+#if UNITY_EDITOR
+        public Func<Byte[]> Loader
+        {
+            get
+            {
+                var assetPath = UnityEditor.AssetDatabase.GetAssetPath(Asset);
+                var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
+                return () => File.ReadAllBytes(assetPath);
+            }
+        }
+#else
+            public Func<Byte[]> Loader
+            {
+                get
+                {
+                    var asset = Asset;
+                    return () => asset.bytes;
+                }
+            }
+#endif
+    }
+
     public class FileMounter : IHttpRequestSolver
     {
         Utf8Bytes m_mountPoint;
         Func<Byte[]> m_content;
+
+        public FileMounter(AssetMount mount) : this(mount.MountPoint, mount.Loader)
+        { }
 
         public FileMounter(String mountPoint, Func<Byte[]> content)
         {

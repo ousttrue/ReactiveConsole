@@ -15,41 +15,6 @@ namespace ReactiveConsole
         [SerializeField]
         int m_port = 80;
 
-        [Serializable]
-        struct AssetMount
-        {
-            public string MountPoint;
-            public TextAsset Asset;
-
-            public AssetMount(string mountPoint, string resourceName)
-            {
-                MountPoint = mountPoint;
-                Asset = Resources.Load<TextAsset>(resourceName);
-            }
-
-
-#if UNITY_EDITOR
-            public Func<Byte[]> Loader
-            {
-                get
-                {
-                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(Asset);
-                    var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
-                    return () => File.ReadAllBytes(assetPath);
-                }
-            }
-#else
-            public Func<Byte[]> Loader
-            {
-                get
-                {
-                    var asset = Asset;
-                    return () => asset.bytes;
-                }
-            }
-#endif
-        }
-
         [SerializeField]
         List<AssetMount> m_mounts = new List<AssetMount>();
 
