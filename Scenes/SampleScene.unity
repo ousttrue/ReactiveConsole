@@ -207,9 +207,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_port: 80
-  m_html: {fileID: 4900000, guid: c2ecf4b37786f4a4a9470153d215c91a, type: 3}
-  m_js: {fileID: 4900000, guid: 10bb81e98cf204e4097bb685850ab80c, type: 3}
-  m_css: {fileID: 4900000, guid: 2daaa0ae13a0cca4497d57089faeed5d, type: 3}
+  m_mounts:
+  - MountPoint: /index.html
+    Asset: {fileID: 4900000, guid: c2ecf4b37786f4a4a9470153d215c91a, type: 3}
+  - MountPoint: /wsconsole.css
+    Asset: {fileID: 4900000, guid: 2daaa0ae13a0cca4497d57089faeed5d, type: 3}
+  - MountPoint: /wsconsole.js
+    Asset: {fileID: 4900000, guid: 10bb81e98cf204e4097bb685850ab80c, type: 3}
   m_interval: 5
 --- !u!4 &376570682
 Transform:
