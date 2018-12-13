@@ -90,7 +90,14 @@ namespace ReactiveConsole
             },
             ex =>
             {
-                Logging.Exception(ex);
+                if (ex is ObjectDisposedException)
+                {
+
+                }
+                else
+                {
+                    Logging.Exception(ex);
+                }
             })
             ;
         }
