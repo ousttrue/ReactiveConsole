@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -113,7 +113,7 @@ namespace ReactiveConsole
             get
             {
                 var assetPath = UnityEditor.AssetDatabase.GetAssetPath(Asset);
-                var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
+                //var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
                 return () => File.ReadAllBytes(assetPath);
             }
         }
