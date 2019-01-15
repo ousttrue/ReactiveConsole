@@ -63,7 +63,8 @@ namespace ReactiveConsole
             Logging.Info("listen " + m_port);
             var m_http = new HttpDispatcher(SetupHttpMount());
 
-            m_console = new WSConsole(m_port, m_http);
+            m_console = new WSConsole();
+            m_console.Listen(m_port, m_http);
 
             var utf8 = new System.Text.UTF8Encoding(false);
             m_disposable = Logging.Observable.Subscribe(x =>

@@ -70,7 +70,11 @@ namespace ReactiveConsole
             }
         }
 
-        public WSConsole(int port, HttpDispatcher http)
+        public WSConsole()
+        {
+        }
+
+        public void Listen(int port, HttpDispatcher http)
         {
             // websocket handling
             http.WebSocketOpened
