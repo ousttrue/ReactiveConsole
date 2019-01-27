@@ -52,7 +52,7 @@ namespace ReactiveConsole
                 CallerLine,
                 CallerMember,
                 Message);
-        }
+        }       
     }
 
     public static class Logging

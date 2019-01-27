@@ -95,38 +95,48 @@ namespace ReactiveConsole
         }
     }
 
+
     [Serializable]
     public struct AssetMount
     {
         public string MountPoint;
+
         public TextAsset Asset;
+
+        public Byte[] Bytes
+        {
+            get;
+            private set;
+        }
 
         public AssetMount(string mountPoint, string resourceName)
         {
             MountPoint = mountPoint;
             Asset = Resources.Load<TextAsset>(resourceName);
+            Bytes = null;
         }
 
+        public void Initialize()
+        {
 #if UNITY_EDITOR
+#else
+            Bytes = Asset.bytes;
+#endif
+        }
+
         public Func<Byte[]> Loader
         {
             get
             {
+#if UNITY_EDITOR
                 var assetPath = UnityEditor.AssetDatabase.GetAssetPath(Asset);
-                //var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../" + assetPath));
                 return () => File.ReadAllBytes(assetPath);
+#else
+                var bytes = Bytes;
+                return () => bytes;
+#endif
             }
         }
-#else
-            public Func<Byte[]> Loader
-            {
-                get
-                {
-                    var asset = Asset;
-                    return () => asset.bytes;
-                }
-            }
-#endif
     }
 
     public class FileMounter : IHttpRequestSolver
